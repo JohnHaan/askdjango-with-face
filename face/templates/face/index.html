@@ -1,0 +1,130 @@
+{% extends "face/layout.html" %}
+
+{% block extra_head %}
+<style>
+    header, #intro {
+        height: 100%;
+    }
+
+    #intro {
+        background: url("/static/wallpaper/idol.jpg") no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+
+    .top-nav-collapse {
+        background-color: #24355C;
+    }
+
+    @media (max-width: 768px) {
+        .navbar:not(.top-nav-collapse) {
+            background: #24355C;
+        }
+    }
+
+    @media (min-width: 800px) and (max-width: 850px) {
+        .navbar:not(.top-nav-collapse) {
+            background: #24355C;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_header %}
+    <div id="intro" class="view">
+        <div class="mask rgba-black-strong">
+            <div class="container-fluid d-flex align-items-center justify-content-center h-100">
+                <div class="row d-flex justify-content-center text-center">
+                    <div class="col-md-10">
+                        <h2 class="display-4 font-weight-bold white-text pt-5 mb-2">
+                            어떤 사진이 궁금한가요?
+                        </h2>
+                        <hr class="hr-light">
+                        <h4 class="white-text my-4">
+                            아리송한 아이돌 사진을 제게 보여주세요 ~
+                        </h4>
+
+                        <form id="identify-form" action="" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <label class="btn btn-outline-white" for="identify-file">
+                                <input id="identify-file" type="file" name="photo" style="display: none;" onchange="$('#running-icon').show(); $('#identify-form').submit();" />
+                                사진 올려서 물어보기
+                                <i id="running-icon" class="fa fa-spinner fa-spin" style="display: none;"></i>
+                            </label>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <main class="mt-5">
+            <div class="container">
+                {% if identified %}
+                    <a name="identified"></a>
+                    <section id="identified" class="text-center">
+                        <h2 class="mb-5 font-weight-bold">Identified</h2>
+
+                        <div class="row d-flex justify-content-center mb-4">
+                            <div class="col-md-8">
+                                <p class="grey-text">
+                                    Microsoft AI를 통해 {{ identified|length }}명의 아이돌을 찾았습니다.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+
+                            {% for person in identified %}
+                                <div class="col-md-4 mb-5">
+                                    <img src="{{ person.photo_url }}" class="img-fluid" />
+                                    <h4 class="my-4 font-weight-bold">{{ person.name }}</h4>
+                                    <p class="grey-text">
+                                        {{ person.confidence }}의 신뢰도
+                                    </p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+
+                    <hr class="my-5" />
+                {% endif %}
+
+                <section id="examples" class="text-center mt-3">
+                    <h2 class="mb-5 font-weight-bold">{{ person_list.count }}명의 아이돌과 함께 합니다. ;)</h2>
+
+                    <div class="card-columns">
+                        {% for person in person_list %}
+                            <div class="card">
+                                <a class="view" style="display: block; cursor: pointer;">
+                                    <img src="{% url "person_photo" person.pk %}" class="card-img-top" alt="">
+                                    <div class="mask pattern-1 flex-center rgba-white-slight">
+                                        <p class="white-text">
+                                            {{ person.name }}<br/>
+                                            {% if person.photo_count > 0 %}
+                                                <small>{{ person.photo_count }}장의 사진</small>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+        </main>
+{% endblock %}
+
+{% block extra_body %}
+    {% if identified %}
+    <script>
+        location.href = '#identified';
+    </script>
+    {% endif %}
+{% endblock %}
+
