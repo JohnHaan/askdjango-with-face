@@ -1,0 +1,8 @@
+django<2
+django-jsonfield
+cognitive_face
+requests
+pillow
+django-imagekit
+click
+jupyter
